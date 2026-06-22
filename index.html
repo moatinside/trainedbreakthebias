@@ -674,11 +674,22 @@ function renderMatrix() {
   qBL.setAttribute('onclick', 'openModal("BL")');
   qBR.setAttribute('onclick', 'openModal("BR")');
 
-  // Labels
-  qTL.innerHTML = `<span class="quadrant-label ql-tl">${state.xLeft} × ${state.yTop}</span>`;
-  qTR.innerHTML = `<span class="quadrant-label ql-tr">${state.xRight} × ${state.yTop}</span>`;
-  qBL.innerHTML = `<span class="quadrant-label ql-bl">${state.xLeft} × ${state.yBottom}</span>`;
-  qBR.innerHTML = `<span class="quadrant-label ql-br">${state.xRight} × ${state.yBottom}</span>`;
+  // Labels (use textContent to prevent XSS)
+  function setQuadLabel(q, text) {
+    q.innerHTML = '';
+    const span = document.createElement('span');
+    span.className = 'quadrant-label';
+    if (q.id === 'qTL') span.classList.add('ql-tl');
+    else if (q.id === 'qTR') span.classList.add('ql-tr');
+    else if (q.id === 'qBL') span.classList.add('ql-bl');
+    else if (q.id === 'qBR') span.classList.add('ql-br');
+    span.textContent = text;
+    q.appendChild(span);
+  }
+  setQuadLabel(qTL, `${state.xLeft} × ${state.yTop}`);
+  setQuadLabel(qTR, `${state.xRight} × ${state.yTop}`);
+  setQuadLabel(qBL, `${state.xLeft} × ${state.yBottom}`);
+  setQuadLabel(qBR, `${state.xRight} × ${state.yBottom}`);
 
   // Axis labels in container
   const container = document.getElementById('matrixContainer');
