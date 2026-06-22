@@ -1,0 +1,1176 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>🧠 Trained Break the Bias</title>
+<style>
+  :root {
+    --bg: #0f0f13;
+    --surface: #1a1a24;
+    --surface2: #24243a;
+    --border: #2e2e4a;
+    --text: #e8e8f0;
+    --text2: #9898b8;
+    --accent: #6c5ce7;
+    --accent2: #a29bfe;
+    --green: #00b894;
+    --orange: #fdcb6e;
+    --red: #e17055;
+    --pink: #fd79a8;
+    --radius: 16px;
+    --shadow: 0 8px 32px rgba(0,0,0,0.5);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans JP', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Header */
+  .header {
+    background: linear-gradient(135deg, #1a1a24 0%, #24243a 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 20px 24px;
+    text-align: center;
+  }
+  .header h1 {
+    font-size: 28px;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--accent2), var(--accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .header p {
+    font-size: 14px;
+    color: var(--text2);
+    margin-top: 4px;
+    -webkit-text-fill-color: var(--text2);
+  }
+
+  /* Container */
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px 16px;
+  }
+
+  /* Cards */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 20px;
+    box-shadow: var(--shadow);
+  }
+  .card-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .card-title .step-num {
+    background: var(--accent);
+    color: white;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  /* Forms */
+  input[type="text"], textarea, select {
+    width: 100%;
+    padding: 12px 16px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--text);
+    font-size: 15px;
+    outline: none;
+    transition: border 0.2s;
+  }
+  input[type="text"]:focus, textarea:focus {
+    border-color: var(--accent);
+  }
+  textarea {
+    resize: vertical;
+    min-height: 60px;
+    font-family: inherit;
+  }
+  label {
+    display: block;
+    font-size: 13px;
+    color: var(--text2);
+    margin-bottom: 6px;
+    font-weight: 500;
+  }
+
+  .axis-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 12px;
+  }
+  .axis-group {
+    background: var(--surface2);
+    border-radius: 12px;
+    padding: 16px;
+  }
+  .axis-group label {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--accent2);
+    margin-bottom: 10px;
+  }
+  .axis-group .end-labels {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: white;
+  }
+  .btn:active { transform: scale(0.97); }
+  .btn-primary { background: var(--accent); }
+  .btn-primary:hover { background: #7c6df7; }
+  .btn-green { background: var(--green); }
+  .btn-green:hover { background: #00d9a3; }
+  .btn-orange { background: var(--orange); color: #1a1a24; }
+  .btn-orange:hover { background: #ffe07a; }
+  .btn-outline {
+    background: transparent;
+    border: 2px solid var(--border);
+    color: var(--text2);
+  }
+  .btn-outline:hover { border-color: var(--accent); color: var(--text); }
+  .btn-danger { background: var(--red); }
+  .btn-sm { padding: 8px 16px; font-size: 13px; }
+  .btn-block { width: 100%; justify-content: center; }
+
+  /* Step indicator */
+  .steps {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+    justify-content: center;
+  }
+  .step-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--border);
+    transition: all 0.3s;
+  }
+  .step-dot.active { background: var(--accent); box-shadow: 0 0 12px var(--accent); }
+  .step-dot.done { background: var(--green); }
+
+  /* Matrix */
+  .matrix-container {
+    position: relative;
+    margin: 20px 0;
+  }
+  .matrix {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4px;
+    aspect-ratio: 1;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+  }
+  .quadrant {
+    position: relative;
+    min-height: 180px;
+    padding: 12px;
+    background: var(--surface2);
+    border: 2px dashed var(--border);
+    transition: all 0.3s;
+    cursor: pointer;
+  }
+  .quadrant:hover {
+    border-color: var(--accent);
+    background: rgba(108,92,231,0.08);
+  }
+  .quadrant-label {
+    font-size: 11px;
+    color: var(--text2);
+    opacity: 0.5;
+    position: absolute;
+    font-weight: 500;
+  }
+  .ql-tl { top: 6px; left: 8px; }
+  .ql-tr { top: 6px; right: 8px; }
+  .ql-bl { bottom: 6px; left: 8px; }
+  .ql-br { bottom: 6px; right: 8px; }
+
+  /* Sticky notes */
+  .sticky {
+    position: absolute;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    line-height: 1.4;
+    cursor: grab;
+    user-select: none;
+    z-index: 2;
+    min-width: 60px;
+    max-width: 85%;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    transition: transform 0.15s, box-shadow 0.15s;
+    word-break: break-word;
+  }
+  .sticky:hover { transform: scale(1.05); z-index: 5; }
+  .sticky-color-0 { background: #6c5ce7; color: white; }
+  .sticky-color-1 { background: #00b894; color: white; }
+  .sticky-color-2 { background: #fdcb6e; color: #1a1a24; }
+  .sticky-color-3 { background: #e17055; color: white; }
+  .sticky-color-4 { background: #fd79a8; color: white; }
+  .sticky-color-5 { background: #0984e3; color: white; }
+
+  .sticky .sticky-close {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.5);
+    border: none;
+    color: white;
+    font-size: 11px;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+  }
+  .quadrant:hover .sticky .sticky-close { display: flex; }
+
+  /* Axis labels */
+  .axis-label-x, .axis-label-y {
+    position: absolute;
+    font-size: 13px;
+    color: var(--text2);
+    font-weight: 600;
+    z-index: 1;
+    pointer-events: none;
+  }
+  .axis-label-x {
+    bottom: -28px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+  }
+  .axis-label-y {
+    top: 50%;
+    left: -80px;
+    transform: translateY(-50%) rotate(-90deg);
+    transform-origin: center center;
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  /* X-axis end labels */
+  .x-label-left, .x-label-right {
+    position: absolute;
+    bottom: -28px;
+    font-size: 12px;
+    color: var(--text2);
+    font-weight: 500;
+    z-index: 1;
+    pointer-events: none;
+  }
+  .x-label-left { left: 8px; }
+  .x-label-right { right: 8px; }
+
+  /* Y-axis end labels */
+  .y-label-top, .y-label-bottom {
+    position: absolute;
+    font-size: 12px;
+    color: var(--text2);
+    font-weight: 500;
+    z-index: 1;
+    pointer-events: none;
+  }
+  .y-label-top { top: -22px; left: 50%; transform: translateX(-50%); }
+  .y-label-bottom { bottom: -22px; left: 50%; transform: translateX(-50%); }
+
+  /* Bias Indicator */
+  .bias-indicator {
+    margin-top: 16px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .bias-cell {
+    padding: 12px;
+    border-radius: 10px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.3s;
+  }
+  .bias-dense { background: rgba(108,92,231,0.25); border: 1px solid var(--accent); }
+  .bias-sparse { background: rgba(0,184,148,0.1); border: 1px dashed var(--green); color: var(--green); }
+  .bias-empty { background: rgba(225,112,85,0.1); border: 2px dashed var(--red); color: var(--red); animation: pulse-border 1.5s ease-in-out infinite; }
+
+  @keyframes pulse-border {
+    0%, 100% { border-color: var(--red); }
+    50% { border-color: rgba(225,112,85,0.3); }
+  }
+
+  /* Bias Break Mode */
+  .break-mode-active .quadrant.has-ideas {
+    opacity: 0.3;
+    pointer-events: none;
+  }
+  .break-mode-active .quadrant.bias-target {
+    border-color: var(--green) !important;
+    border-style: solid !important;
+    border-width: 3px !important;
+    background: rgba(0,184,148,0.08) !important;
+    cursor: pointer !important;
+    opacity: 1 !important;
+    pointer-events: auto !important;
+  }
+  .break-mode-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    background: var(--green);
+    color: white;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  /* Idea input modal */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    backdrop-filter: blur(4px);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    max-width: 420px;
+    width: 100%;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  }
+  .modal h3 {
+    font-size: 16px;
+    margin-bottom: 12px;
+  }
+  .modal .modal-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+  }
+
+  /* Results */
+  .result-area {
+    margin-top: 16px;
+    padding: 16px;
+    background: var(--surface2);
+    border-radius: 12px;
+    display: none;
+  }
+  .result-area.show { display: block; }
+
+  /* History */
+  .history-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 12px;
+  }
+  .history-item {
+    padding: 12px 16px;
+    background: var(--surface2);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.2s;
+    font-size: 14px;
+  }
+  .history-item:hover { background: #2e2e4a; }
+  .history-item .hi-date { font-size: 11px; color: var(--text2); }
+
+  /* Responsive */
+  @media (max-width: 600px) {
+    .axis-grid { grid-template-columns: 1fr; }
+    .matrix { aspect-ratio: 1; }
+    .quadrant { min-height: 140px; padding: 8px; }
+    .sticky { font-size: 11px; padding: 6px 10px; }
+    .header h1 { font-size: 22px; }
+    .card { padding: 16px; }
+    .bias-indicator { font-size: 12px; }
+    .axis-label-y { left: -60px; font-size: 11px; }
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* Tooltip */
+  .tip {
+    font-size: 12px;
+    color: var(--text2);
+    margin-top: 8px;
+    line-height: 1.5;
+  }
+  .tip strong { color: var(--accent2); }
+
+  /* Animations */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .fade-in { animation: fadeIn 0.3s ease-out; }
+
+  .empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: var(--text2);
+  }
+  .empty-state .icon { font-size: 48px; margin-bottom: 12px; }
+  .empty-state p { font-size: 14px; line-height: 1.6; }
+
+  /* Confetti-like effects */
+  .bias-found-text {
+    text-align: center;
+    padding: 16px;
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 1.6;
+  }
+  .bias-found-text .highlight {
+    color: var(--red);
+    font-weight: 800;
+  }
+  .bias-found-text .blank-highlight {
+    color: var(--green);
+    font-weight: 800;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🧠 Trained Break the Bias</h1>
+  <p>濱口秀司メソッドで、思考の「当たり前」を可視化して壊す</p>
+</div>
+
+<div class="container">
+
+  <!-- Step dots -->
+  <div class="steps" id="stepDots">
+    <div class="step-dot active" data-step="1"></div>
+    <div class="step-dot" data-step="2"></div>
+    <div class="step-dot" data-step="3"></div>
+    <div class="step-dot" data-step="4"></div>
+  </div>
+
+  <!-- STEP 1: Theme -->
+  <div class="card fade-in" id="step1">
+    <div class="card-title"><span class="step-num">1</span> テーマを決める</div>
+    <p class="tip" style="margin-bottom:12px">「新しいアイデアが欲しい領域」は何ですか？<br>
+    <strong>例</strong>：「新規サービス」「採用方法」「営業戦略」「商品企画」など</p>
+    <input type="text" id="themeInput" placeholder="例：新規事業アイデア、採用の仕組み、マーケ施策..." value="新規事業アイデア">
+    <div style="margin-top:16px">
+      <button class="btn btn-primary btn-block" onclick="goStep2()">次へ →</button>
+    </div>
+  </div>
+
+  <!-- STEP 2: Axes -->
+  <div class="card fade-in" id="step2" style="display:none">
+    <div class="card-title"><span class="step-num">2</span> 2つの軸を設定する</div>
+    <p class="tip" style="margin-bottom:12px">あなたの業界やテーマにある「暗黙の前提」を軸にしてみよう。<br>
+    <strong>例</strong>：横軸「モノを作る ← → モノを作らない」／ 縦軸「売れる ← → 売れない」</p>
+
+    <div class="axis-grid">
+      <div class="axis-group">
+        <label>📐 X軸（横）</label>
+        <input type="text" id="xName" placeholder="軸の名前" value="プロダクト">
+        <div class="end-labels">
+          <div><label style="font-size:11px">← 左端</label><input type="text" id="xLeft" value="つくる" style="font-size:13px"></div>
+          <div><label style="font-size:11px">右端 →</label><input type="text" id="xRight" value="つくらない" style="font-size:13px"></div>
+        </div>
+      </div>
+      <div class="axis-group">
+        <label>📐 Y軸（縦）</label>
+        <input type="text" id="yName" placeholder="軸の名前" value="成果">
+        <div class="end-labels">
+          <div><label style="font-size:11px">← 上端</label><input type="text" id="yTop" value="でる" style="font-size:13px"></div>
+          <div><label style="font-size:11px">下端 →</label><input type="text" id="yBottom" value="でない" style="font-size:13px"></div>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:16px;display:flex;gap:10px">
+      <button class="btn btn-outline" onclick="goStep1()">← 戻る</button>
+      <button class="btn btn-primary" onclick="goStep3()" style="flex:1">マトリックスを描く →</button>
+    </div>
+  </div>
+
+  <!-- STEP 3: Matrix -->
+  <div class="card fade-in" id="step3" style="display:none">
+    <div class="card-title"><span class="step-num">3</span> アイデアをマッピングする</div>
+    <p class="tip" style="margin-bottom:8px">
+      マス目をタップしてアイデアを追加しよう。<strong>密集した場所 = バイアス（思考の偏り）</strong>。
+    </p>
+
+    <div id="breakModeBanner" style="display:none;margin-bottom:12px">
+      <span class="break-mode-badge">⚡ 強制発想モード</span>
+      <span style="font-size:13px;color:var(--green)">空白地帯にアイデアを強制投入せよ！</span>
+    </div>
+
+    <div class="matrix-container" id="matrixContainer">
+      <div class="matrix" id="matrix">
+        <div class="quadrant" id="qTL" data-quad="TL"></div>
+        <div class="quadrant" id="qTR" data-quad="TR"></div>
+        <div class="quadrant" id="qBL" data-quad="BL"></div>
+        <div class="quadrant" id="qBR" data-quad="BR"></div>
+      </div>
+    </div>
+
+    <div id="biasIndicator" class="bias-indicator"></div>
+
+    <div id="actionRow" style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn btn-green" id="btnBreakBias" onclick="activateBreakMode()">⚡ バイアスを壊す！</button>
+      <button class="btn btn-outline btn-sm" onclick="resetMatrix()">🗑 リセット</button>
+    </div>
+  </div>
+
+  <!-- STEP 4: Results -->
+  <div class="card fade-in" id="step4" style="display:none">
+    <div class="card-title"><span class="step-num">4</span> 🎯 バイアス分析レポート</div>
+    <div id="reportContent"></div>
+    <div style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap">
+      <button class="btn btn-outline" onclick="copyReport()">📋 コピー</button>
+      <button class="btn btn-outline" onclick="exportImage()">🖼 画像として保存</button>
+      <button class="btn btn-outline" onclick="resetAll()">🔄 最初から</button>
+    </div>
+  </div>
+
+  <!-- History -->
+  <div class="card" style="margin-top:20px">
+    <div class="card-title">📜 セッション履歴</div>
+    <div id="historyList" class="history-list">
+      <div class="empty-state"><p>まだ履歴がありません</p></div>
+    </div>
+    <button class="btn btn-outline btn-sm btn-block" onclick="clearHistory()" style="margin-top:10px">履歴をクリア</button>
+  </div>
+
+  <!-- Footer -->
+  <p style="text-align:center;font-size:12px;color:var(--text2);padding:20px 0">
+    濱口秀司「Break the Bias」メソッドに基づく<br>
+    <a href="https://github.com/moatinside/trainedbreakthebias" style="color:var(--accent2)" target="_blank">GitHub</a>
+  </p>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="modal">
+  <div class="modal">
+    <h3 id="modalTitle">💡 アイデアを追加</h3>
+    <p class="tip" id="modalHint" style="margin-bottom:12px"></p>
+    <textarea id="modalInput" placeholder="ここにアイデアを入力..." rows="3"></textarea>
+    <div class="modal-actions">
+      <button class="btn btn-outline btn-sm" onclick="closeModal()" style="flex:1">キャンセル</button>
+      <button class="btn btn-primary btn-sm" onclick="submitIdea()" style="flex:2">追加する</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ========== STATE ==========
+let state = {
+  theme: '',
+  xName: '', xLeft: '', xRight: '',
+  yName: '', yTop: '', yBottom: '',
+  ideas: [], // {id, quad, text, colorIdx, x, y}
+  colorIdx: 0,
+  breakMode: false,
+  sessionCount: 0
+};
+
+const colorCount = 6;
+let nextId = 1;
+
+// ========== STEP NAV ==========
+function showStep(n) {
+  for (let i = 1; i <= 4; i++) {
+    const el = document.getElementById('step' + i);
+    if (el) el.style.display = i === n ? 'block' : 'none';
+  }
+  document.querySelectorAll('.step-dot').forEach(d => {
+    const s = parseInt(d.dataset.step);
+    d.className = 'step-dot' + (s === n ? ' active' : s < n ? ' done' : '');
+  });
+}
+
+function goStep1() { showStep(1); }
+function goStep2() {
+  state.theme = document.getElementById('themeInput').value.trim() || 'テーマ';
+  showStep(2);
+}
+function goStep3() {
+  state.xName = document.getElementById('xName').value.trim() || 'X軸';
+  state.xLeft = document.getElementById('xLeft').value.trim() || '左';
+  state.xRight = document.getElementById('xRight').value.trim() || '右';
+  state.yName = document.getElementById('yName').value.trim() || 'Y軸';
+  state.yTop = document.getElementById('yTop').value.trim() || '上';
+  state.yBottom = document.getElementById('yBottom').value.trim() || '下';
+  state.breakMode = false;
+  document.getElementById('btnBreakBias').textContent = '⚡ バイアスを壊す！';
+  document.getElementById('breakModeBanner').style.display = 'none';
+  document.getElementById('step3').classList.remove('break-mode-active');
+  renderMatrix();
+  showStep(3);
+}
+
+// ========== MATRIX ==========
+function renderMatrix() {
+  const qTL = document.getElementById('qTL');
+  const qTR = document.getElementById('qTR');
+  const qBL = document.getElementById('qBL');
+  const qBR = document.getElementById('qBR');
+
+  qTL.setAttribute('onclick', 'openModal("TL")');
+  qTR.setAttribute('onclick', 'openModal("TR")');
+  qBL.setAttribute('onclick', 'openModal("BL")');
+  qBR.setAttribute('onclick', 'openModal("BR")');
+
+  // Labels
+  qTL.innerHTML = `<span class="quadrant-label ql-tl">${state.xLeft} × ${state.yTop}</span>`;
+  qTR.innerHTML = `<span class="quadrant-label ql-tr">${state.xRight} × ${state.yTop}</span>`;
+  qBL.innerHTML = `<span class="quadrant-label ql-bl">${state.xLeft} × ${state.yBottom}</span>`;
+  qBR.innerHTML = `<span class="quadrant-label ql-br">${state.xRight} × ${state.yBottom}</span>`;
+
+  // Axis labels in container
+  const container = document.getElementById('matrixContainer');
+  // Remove old custom labels
+  container.querySelectorAll('.custom-axis-label').forEach(el => el.remove());
+
+  function addLabel(cls, text, style) {
+    const el = document.createElement('div');
+    el.className = cls + ' custom-axis-label';
+    el.textContent = text;
+    Object.assign(el.style, style);
+    container.appendChild(el);
+  }
+
+  addLabel('axis-label-x', state.xName, {});
+  addLabel('x-label-left', state.xLeft, {});
+  addLabel('x-label-right', state.xRight, {});
+  addLabel('y-label-top', state.yTop, {});
+  addLabel('y-label-bottom', state.yBottom, {});
+  addLabel('axis-label-y', state.yName, {});
+
+  // Render ideas
+  renderAllStickies();
+  updateBiasIndicator();
+}
+
+function renderAllStickies() {
+  document.querySelectorAll('.quadrant .sticky').forEach(el => el.remove());
+  state.ideas.forEach(idea => {
+    const q = document.getElementById('q' + idea.quad);
+    const el = document.createElement('div');
+    el.className = `sticky sticky-color-${idea.colorIdx}`;
+    el.textContent = idea.text;
+    el.style.left = idea.x + '%';
+    el.style.top = idea.y + '%';
+    el.dataset.id = idea.id;
+    el.setAttribute('onclick', 'event.stopPropagation()');
+    const closeBtn = document.createElement('button');
+    closeBtn.className = 'sticky-close';
+    closeBtn.textContent = '×';
+    closeBtn.setAttribute('onclick', `event.stopPropagation();deleteIdea(${idea.id})`);
+    el.appendChild(closeBtn);
+    q.appendChild(el);
+  });
+
+  // Mark quadrants with ideas
+  ['TL','TR','BL','BR'].forEach(q => {
+    const el = document.getElementById('q' + q);
+    const count = state.ideas.filter(i => i.quad === q).length;
+    el.classList.toggle('has-ideas', count > 0);
+  });
+}
+
+function updateBiasIndicator() {
+  const container = document.getElementById('biasIndicator');
+  const quads = ['TL','TR','BL','BR'];
+  const counts = {};
+  quads.forEach(q => counts[q] = state.ideas.filter(i => i.quad === q).length);
+  const max = Math.max(...Object.values(counts), 1);
+
+  let html = '';
+  quads.forEach(q => {
+    const c = counts[q];
+    let cls = 'bias-cell';
+    let label = '';
+    const quadName = getQuadLabel(q);
+    if (c === 0) {
+      cls += ' bias-empty';
+      label = `🟢 ${quadName}<br><small>空白地帯！<br>ここを狙え</small>`;
+    } else if (c >= max * 0.6) {
+      cls += ' bias-dense';
+      label = `🟣 ${quadName}<br><strong>${c}個</strong><br><small>バイアス密集！</small>`;
+    } else {
+      cls += ' bias-sparse';
+      label = `🔵 ${quadName}<br><strong>${c}個</strong>`;
+    }
+    html += `<div class="${cls}">${label}</div>`;
+  });
+  container.innerHTML = html;
+}
+
+function getQuadLabel(q) {
+  const map = {
+    TL: `${state.xLeft}・${state.yTop}`,
+    TR: `${state.xRight}・${state.yTop}`,
+    BL: `${state.xLeft}・${state.yBottom}`,
+    BR: `${state.xRight}・${state.yBottom}`
+  };
+  return map[q] || q;
+}
+
+// ========== IDEAS ==========
+function openModal(quad) {
+  if (state.breakMode) {
+    const q = document.getElementById('q' + quad);
+    if (q.classList.contains('has-ideas') && !q.classList.contains('bias-target')) {
+      return; // locked in break mode
+    }
+  }
+  document.getElementById('modalTitle').textContent = `💡 ${getQuadLabel(quad)} にアイデア追加`;
+  document.getElementById('modalHint').innerHTML = state.breakMode
+    ? '⚡ <strong>強制発想</strong>：この空白地帯で無理やり考える。極端で非現実的でOK！'
+    : '思いついたアイデアを入力してください。極端な例でも構いません。';
+  document.getElementById('modalInput').value = '';
+  document.getElementById('modal').classList.add('open');
+  document.getElementById('modal').dataset.targetQuad = quad;
+  setTimeout(() => document.getElementById('modalInput').focus(), 100);
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+}
+
+function submitIdea() {
+  const text = document.getElementById('modalInput').value.trim();
+  if (!text) return;
+  const quad = document.getElementById('modal').dataset.targetQuad;
+  // Random position within quadrant
+  const x = 5 + Math.random() * 60;
+  const y = 5 + Math.random() * 60;
+  const colorIdx = state.colorIdx % colorCount;
+  state.colorIdx++;
+  state.ideas.push({ id: nextId++, quad, text, colorIdx, x, y });
+  closeModal();
+  renderAllStickies();
+  updateBiasIndicator();
+}
+
+function deleteIdea(id) {
+  state.ideas = state.ideas.filter(i => i.id !== id);
+  renderAllStickies();
+  updateBiasIndicator();
+}
+
+function resetMatrix() {
+  state.ideas = [];
+  state.breakMode = false;
+  document.getElementById('btnBreakBias').textContent = '⚡ バイアスを壊す！';
+  document.getElementById('breakModeBanner').style.display = 'none';
+  document.getElementById('step3').classList.remove('break-mode-active');
+  renderAllStickies();
+  updateBiasIndicator();
+}
+
+// ========== BIAS BREAK MODE ==========
+function activateBreakMode() {
+  if (state.ideas.length < 2) {
+    alert('まずは2つ以上アイデアを追加してから使ってみよう！');
+    return;
+  }
+
+  state.breakMode = !state.breakMode;
+  const step3 = document.getElementById('step3');
+  const btn = document.getElementById('btnBreakBias');
+
+  if (state.breakMode) {
+    btn.textContent = '🔙 通常モードに戻る';
+    btn.className = 'btn btn-outline';
+    document.getElementById('breakModeBanner').style.display = 'block';
+    step3.classList.add('break-mode-active');
+
+    // Find empty/sparse quadrants
+    const quads = ['TL','TR','BL','BR'];
+    const counts = {};
+    quads.forEach(q => counts[q] = state.ideas.filter(i => i.quad === q).length);
+    const min = Math.min(...Object.values(counts));
+
+    quads.forEach(q => {
+      const el = document.getElementById('q' + q);
+      if (counts[q] === min) {
+        el.classList.add('bias-target');
+      } else {
+        el.classList.remove('bias-target');
+      }
+    });
+  } else {
+    btn.textContent = '⚡ バイアスを壊す！';
+    btn.className = 'btn btn-green';
+    document.getElementById('breakModeBanner').style.display = 'none';
+    step3.classList.remove('break-mode-active');
+    document.querySelectorAll('.bias-target').forEach(el => el.classList.remove('bias-target'));
+  }
+}
+
+// ========== REPORT ==========
+function generateReport() {
+  const quads = ['TL','TR','BL','BR'];
+  const counts = {};
+  quads.forEach(q => counts[q] = state.ideas.filter(i => i.quad === q).length);
+  const total = state.ideas.length;
+  const max = Math.max(...Object.values(counts), 1);
+  const min = Math.min(...Object.values(counts));
+
+  const denseQuads = quads.filter(q => counts[q] >= max * 0.6 && counts[q] > 0);
+  const emptyQuads = quads.filter(q => counts[q] === min);
+
+  let html = '';
+
+  // Summary
+  html += `<div style="margin-bottom:16px">`;
+  html += `<p style="font-size:14px;color:var(--text2)">テーマ：<strong style="color:var(--text)">${state.theme}</strong></p>`;
+  html += `<p style="font-size:14px;color:var(--text2)">総アイデア数：<strong style="color:var(--text)">${total}個</strong></p>`;
+  html += `</div>`;
+
+  // Bias found
+  if (denseQuads.length > 0) {
+    html += `<div class="bias-found-text">`;
+    html += `🧠 <span class="highlight">バイアス発見！</span><br>`;
+    html += `「${denseQuads.map(q => getQuadLabel(q)).join('」「')}」に思考が<strong>${Math.round(max/total*100)}%</strong>集中しています。<br>`;
+    html += `これがあなたの<strong>「当たり前」</strong>（＝バイアス）です。`;
+    html += `</div>`;
+  }
+
+  // Details per quad
+  html += `<div style="margin-top:16px;display:grid;grid-template-columns:1fr 1fr;gap:10px">`;
+  quads.forEach(q => {
+    const c = counts[q];
+    const ideas = state.ideas.filter(i => i.quad === q);
+    let cls = 'bias-cell';
+    if (c === 0) cls += ' bias-empty';
+    else if (c >= max * 0.6) cls += ' bias-dense';
+    else cls += ' bias-sparse';
+
+    let label = `<div class="${cls}" style="text-align:left;padding:12px">`;
+    label += `<div style="font-size:13px;font-weight:700;margin-bottom:6px">${getQuadLabel(q)}</div>`;
+    label += `<div style="font-size:12px;margin-bottom:4px">${c}個のアイデア</div>`;
+    if (ideas.length > 0) {
+      label += `<div style="font-size:11px;color:var(--text2);line-height:1.5">`;
+      ideas.forEach(idea => { label += `• ${idea.text}<br>`; });
+      label += `</div>`;
+    } else {
+      label += `<div style="font-size:11px;color:var(--green)">⚡ 強制発想候補エリア</div>`;
+    }
+    label += `</div>`;
+    html += label;
+  });
+  html += `</div>`;
+
+  // Action suggestions
+  if (emptyQuads.length > 0) {
+    html += `<div style="margin-top:20px;padding:16px;background:rgba(0,184,148,0.1);border-radius:12px;border:1px solid var(--green)">`;
+    html += `<strong style="color:var(--green)">💡 強制発想のヒント</strong>`;
+    html += `<p style="font-size:13px;margin-top:8px;line-height:1.6">`;
+    html += `「${emptyQuads.map(q => getQuadLabel(q)).join('」「')}」の領域はまだ誰も考えていません。<br>`;
+    html += `ここで<strong>極端で非現実的</strong>なアイデアを無理やり考えてみましょう。<br>`;
+    html += `例：<em>「${state.xLeft}も${state.xRight}もしないのに${state.yTop}が出る」方法は？</em>`;
+    html += `</p>`;
+    html += `</div>`;
+  }
+
+  // Key insight
+  html += `<div style="margin-top:16px;padding:16px;background:var(--surface2);border-radius:12px">`;
+  html += `<strong style="color:var(--accent2)">🎯 インサイト</strong>`;
+  html += `<p style="font-size:13px;margin-top:8px;line-height:1.6">`;
+  if (denseQuads.length > 0 && emptyQuads.length > 0) {
+    html += `あなたは無意識に「${denseQuads.map(q => getQuadLabel(q)).join('」「')}」の方向で考えていました。<br>`;
+    html += `イノベーションのチャンスは「${emptyQuads.map(q => getQuadLabel(q)).join('」「')}」の空白地帯にあります。<br>`;
+    html += `<span style="color:var(--accent2)">バイアスを認識したあなたは、もう元には戻れません。そこからがイノベーションの始まりです。</span>`;
+  } else if (total < 4) {
+    html += `もう少しアイデアを追加してから分析してみましょう。目安：8〜12個`;
+  } else {
+    html += `全体的にバランスよくアイデアが出ています。さらに異なる軸の組み合わせも試してみましょう。`;
+  }
+  html += `</p>`;
+  html += `</div>`;
+
+  return html;
+}
+
+function showReport() {
+  document.getElementById('reportContent').innerHTML = generateReport();
+  showStep(4);
+  saveHistory();
+}
+
+// ========== EXPORT ==========
+function copyReport() {
+  const el = document.getElementById('reportContent');
+  const text = el.innerText || el.textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    alert('レポートをコピーしました！');
+  }).catch(() => {
+    // Fallback
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    ta.remove();
+    alert('レポートをコピーしました！');
+  });
+}
+
+function exportImage() {
+  // Simple text export using canvas
+  const canvas = document.createElement('canvas');
+  canvas.width = 800;
+  canvas.height = 1000;
+  const ctx = canvas.getContext('2d');
+
+  // Background
+  ctx.fillStyle = '#0f0f13';
+  ctx.fillRect(0, 0, 800, 1000);
+
+  // Title
+  ctx.fillStyle = '#6c5ce7';
+  ctx.font = 'bold 32px sans-serif';
+  ctx.fillText('🧠 Break the Bias', 40, 60);
+  ctx.fillStyle = '#9898b8';
+  ctx.font = '18px sans-serif';
+  ctx.fillText('テーマ: ' + state.theme, 40, 95);
+
+  // Matrix
+  const mx = 80, my = 130, mw = 500, mh = 500;
+  ctx.strokeStyle = '#2e2e4a';
+  ctx.lineWidth = 2;
+  ctx.strokeRect(mx, my, mw/2, mh/2);
+  ctx.strokeRect(mx + mw/2, my, mw/2, mh/2);
+  ctx.strokeRect(mx, my + mh/2, mw/2, mh/2);
+  ctx.strokeRect(mx + mw/2, my + mh/2, mw/2, mh/2);
+
+  // Axis labels
+  ctx.fillStyle = '#9898b8';
+  ctx.font = '14px sans-serif';
+  ctx.fillText(state.xLeft, mx, my + mh + 25);
+  ctx.fillText(state.xRight, mx + mw - 60, my + mh + 25);
+  ctx.fillText(state.xName, mx + mw/2 - 20, my + mh + 45);
+  ctx.fillText(state.yTop, mx + mw + 15, my + 20);
+  ctx.fillText(state.yBottom, mx + mw + 15, my + mh - 5);
+
+  // Ideas
+  const colors = ['#6c5ce7','#00b894','#fdcb6e','#e17055','#fd79a8','#0984e3'];
+  const qOffsets = { TL: [0,0], TR: [mw/2,0], BL: [0,mh/2], BR: [mw/2,mh/2] };
+  state.ideas.forEach(idea => {
+    const [ox, oy] = qOffsets[idea.quad];
+    const cx = mx + ox + (idea.x/100) * (mw/2);
+    const cy = my + oy + (idea.y/100) * (mh/2);
+    ctx.fillStyle = colors[idea.colorIdx % colors.length];
+    const tw = ctx.measureText(idea.text).width;
+    const pw = Math.min(tw + 20, mw/2 - 20);
+    const ph = 30;
+    const rx = Math.min(cx, mx + ox + mw/2 - pw - 5);
+    const ry = Math.min(cy, my + oy + mh/2 - ph - 5);
+    ctx.beginPath();
+    ctx.roundRect(rx, ry, pw, ph, 6);
+    ctx.fill();
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '12px sans-serif';
+    ctx.fillText(idea.text.substring(0, 20), rx + 8, ry + 20);
+  });
+
+  // Stats
+  const quads = ['TL','TR','BL','BR'];
+  const counts = {};
+  quads.forEach(q => counts[q] = state.ideas.filter(i => i.quad === q).length);
+  const total = state.ideas.length;
+
+  ctx.fillStyle = '#e8e8f0';
+  ctx.font = 'bold 18px sans-serif';
+  ctx.fillText('📊 分析', 40, 690);
+  ctx.font = '15px sans-serif';
+  let yy = 720;
+  quads.forEach(q => {
+    ctx.fillStyle = counts[q] === 0 ? '#00b894' : '#9898b8';
+    ctx.fillText(`${getQuadLabel(q)}: ${counts[q]}個`, 40, yy);
+    yy += 25;
+  });
+
+  ctx.fillStyle = '#6c5ce7';
+  ctx.font = 'bold 16px sans-serif';
+  ctx.fillText(`総アイデア: ${total}個`, 40, yy + 15);
+
+  // Footer
+  ctx.fillStyle = '#2e2e4a';
+  ctx.font = '12px sans-serif';
+  ctx.fillText('Trained Break the Bias — 濱口秀司メソッド based', 40, 970);
+
+  // Download
+  const link = document.createElement('a');
+  link.download = `break-the-bias-${Date.now()}.png`;
+  link.href = canvas.toDataURL();
+  link.click();
+}
+
+// roundRect polyfill for canvas
+if (!CanvasRenderingContext2D.prototype.roundRect) {
+  CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
+    if (r > w/2) r = w/2;
+    if (r > h/2) r = h/2;
+    this.moveTo(x + r, y);
+    this.lineTo(x + w - r, y);
+    this.quadraticCurveTo(x + w, y, x + w, y + r);
+    this.lineTo(x + w, y + h - r);
+    this.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    this.lineTo(x + r, y + h);
+    this.quadraticCurveTo(x, y + h, x, y + h - r);
+    this.lineTo(x, y + r);
+    this.quadraticCurveTo(x, y, x + r, y);
+  };
+}
+
+// ========== HISTORY ==========
+function saveHistory() {
+  const entry = {
+    theme: state.theme,
+    xName: state.xName, xLeft, xRight: state.xRight,
+    yName: state.yName, yTop: state.yTop, yBottom: state.yBottom,
+    ideas: state.ideas.length,
+    date: new Date().toLocaleString('ja-JP'),
+    dense: getDenseInfo()
+  };
+  let history = JSON.parse(localStorage.getItem('btb_history') || '[]');
+  history.unshift(entry);
+  if (history.length > 20) history = history.slice(0, 20);
+  localStorage.setItem('btb_history', JSON.stringify(history));
+  renderHistory();
+}
+
+function getDenseInfo() {
+  const quads = ['TL','TR','BL','BR'];
+  const counts = {};
+  quads.forEach(q => counts[q] = state.ideas.filter(i => i.quad === q).length);
+  const max = Math.max(...Object.values(counts), 1);
+  const dense = quads.filter(q => counts[q] >= max * 0.6 && counts[q] > 0);
+  return dense.map(q => getQuadLabel(q)).join('、') || 'バランス良し';
+}
+
+function renderHistory() {
+  const list = document.getElementById('historyList');
+  const history = JSON.parse(localStorage.getItem('btb_history') || '[]');
+  if (history.length === 0) {
+    list.innerHTML = '<div class="empty-state"><p>まだ履歴がありません</p></div>';
+    return;
+  }
+  list.innerHTML = history.map((h, i) => `
+    <div class="history-item" onclick="loadHistory(${i})">
+      <strong>${h.theme}</strong>
+      <div class="hi-date">${h.date} · ${h.ideas}個のアイデア · バイアス: ${h.dense}</div>
+    </div>
+  `).join('');
+}
+
+function loadHistory(idx) {
+  const history = JSON.parse(localStorage.getItem('btb_history') || '[]');
+  if (!history[idx]) return;
+  const h = history[idx];
+  // Prefill step1
+  document.getElementById('themeInput').value = h.theme;
+  document.getElementById('xName').value = h.xName || '';
+  document.getElementById('xLeft').value = h.xLeft || '';
+  document.getElementById('xRight').value = h.xRight || '';
+  document.getElementById('yName').value = h.yName || '';
+  document.getElementById('yTop').value = h.yTop || '';
+  document.getElementById('yBottom').value = h.yBottom || '';
+  goStep2();
+}
+
+function clearHistory() {
+  if (!confirm('履歴をクリアしてよろしいですか？')) return;
+  localStorage.removeItem('btb_history');
+  renderHistory();
+}
+
+function resetAll() {
+  state.ideas = [];
+  state.breakMode = false;
+  document.getElementById('step3').classList.remove('break-mode-active');
+  goStep1();
+}
+
+// ========== KEYBOARD ==========
+document.getElementById('modalInput').addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    submitIdea();
+  }
+});
+document.getElementById('modal').addEventListener('click', (e) => {
+  if (e.target === document.getElementById('modal')) closeModal();
+});
+
+// ========== SECOND BUTTON IN STEP3 ==========
+// Add a "分析する" button
+document.addEventListener('DOMContentLoaded', () => {
+  const actionRow = document.getElementById('actionRow');
+  const analyzeBtn = document.createElement('button');
+  analyzeBtn.className = 'btn btn-primary';
+  analyzeBtn.textContent = '📊 分析レポートを見る';
+  analyzeBtn.onclick = showReport;
+  actionRow.appendChild(analyzeBtn);
+  renderHistory();
+});
+</script>
+</body>
+</html>
