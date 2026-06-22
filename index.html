@@ -192,7 +192,8 @@
   /* Matrix */
   .matrix-container {
     position: relative;
-    margin: 20px 0;
+    margin: 30px 0 50px 0;
+    padding-bottom: 50px;
   }
   .matrix {
     display: grid;
@@ -288,11 +289,13 @@
   }
   .axis-label-y {
     top: 50%;
-    left: -80px;
+    left: -70px;
     transform: translateY(-50%) rotate(-90deg);
     transform-origin: center center;
     text-align: center;
     white-space: nowrap;
+    width: 140px;
+    letter-spacing: 0.5px;
   }
 
   /* X-axis end labels */
@@ -322,7 +325,7 @@
 
   /* Bias Indicator */
   .bias-indicator {
-    margin-top: 16px;
+    margin-top: 24px;
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 8px;
@@ -438,7 +441,8 @@
     .header h1 { font-size: 22px; }
     .card { padding: 16px; }
     .bias-indicator { font-size: 12px; }
-    .axis-label-y { left: -60px; font-size: 11px; }
+    .axis-label-y { left: -40px; font-size: 11px; width: 100px; }
+    .matrix-container { padding-bottom: 60px; }
   }
 
   /* Scrollbar */
